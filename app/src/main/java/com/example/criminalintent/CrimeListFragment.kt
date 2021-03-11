@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -45,9 +47,8 @@ class CrimeListFragment : Fragment() {
     private inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view){
         //init
         private lateinit var crime: Crime
-        val titleTextView: TextView = view.findViewById(R.id.title_text_view)
-        val dateTextView: TextView = view.findViewById(R.id.date_text_view)
-
+        val titleTextView: TextView = itemView.findViewById(R.id.title_text_view)
+        val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
         init {
             view.setOnClickListener {
                 Toast.makeText(context, "${crime.title} pressed!", Toast.LENGTH_SHORT).show()
@@ -58,13 +59,23 @@ class CrimeListFragment : Fragment() {
             this.crime = crime
             titleTextView.text = crime.title
             dateTextView.text = crime.date.toString()
+
+            if (crime.requirePolice){
+                val policeButton: ImageButton = itemView.findViewById(R.id.police_button)
+                policeButton.setOnClickListener {
+                    Toast.makeText(context, "call police", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
     }
 
     private inner class CrimeAdapter(var crimes: List<Crime>): RecyclerView.Adapter<CrimeHolder>(){
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
-            val view = layoutInflater.inflate(R.layout.list_item_crime, parent, false)
+            val view = when (viewType){
+                R.id.list_item_crime -> layoutInflater.inflate(R.layout.list_item_crime, parent, false)
+                else -> layoutInflater.inflate(R.layout.list_item_police, parent, false)
+            }
             return CrimeHolder(view)
         }
 
@@ -75,6 +86,13 @@ class CrimeListFragment : Fragment() {
 
         override fun getItemCount() = crimes.size
 
+        override fun getItemViewType(position: Int): Int {
+            return when{
+                crimes[position].requirePolice -> R.id.list_item_police
+                else -> R.id.list_item_crime
+            }
+
+        }
     }
 
     companion object {

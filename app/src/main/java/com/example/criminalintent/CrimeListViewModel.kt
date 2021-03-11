@@ -11,6 +11,10 @@ class CrimeListViewModel : ViewModel() {
             val crime = Crime()
             crime.title = "Crime #$i"
             crime.isSolved = i % 2 == 0
+            crime.requirePolice = when((Math.random() * 2 + 1).toInt()){
+                1 -> false
+                else -> true
+            }
             crimes += crime
         }
     }

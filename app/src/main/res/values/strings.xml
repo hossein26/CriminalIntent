@@ -4,4 +4,6 @@
     <string name="title_hint">Enter a title for crime</string>
     <string name="details_text">Details</string>
     <string name="chb_solved">Solved</string>
+    <string name="police_button">Police</string>
+    <string name="call_police_description">call police</string>
 </resources>
