@@ -1,13 +1,11 @@
 package com.example.criminalintent
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,8 +45,9 @@ class CrimeListFragment : Fragment() {
     private inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view){
         //init
         private lateinit var crime: Crime
-        val titleTextView: TextView = itemView.findViewById(R.id.title_text_view)
-        val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
+        private val titleTextView: TextView = itemView.findViewById(R.id.title_text_view)
+        private val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
+
         init {
             view.setOnClickListener {
                 Toast.makeText(context, "${crime.title} pressed!", Toast.LENGTH_SHORT).show()
@@ -60,7 +59,16 @@ class CrimeListFragment : Fragment() {
             titleTextView.text = crime.title
             dateTextView.text = crime.date.toString()
 
-            if (crime.requirePolice){
+            if (!crime.requirePolice){
+                val solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
+                solvedImageView.visibility =
+                    when{
+                        crime.isSolved -> View.VISIBLE
+                        else -> View.GONE
+                    }
+            }
+
+            if (crime.requirePolice && !crime.isSolved){
                 val policeButton: ImageButton = itemView.findViewById(R.id.police_button)
                 policeButton.setOnClickListener {
                     Toast.makeText(context, "call police", Toast.LENGTH_SHORT).show()
