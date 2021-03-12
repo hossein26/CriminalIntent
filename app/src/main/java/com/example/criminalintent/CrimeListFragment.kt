@@ -3,18 +3,23 @@ package com.example.criminalintent
 import android.content.Context
 import android.os.Bundle
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.*
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.core.view.get
+import androidx.core.view.isEmpty
+import androidx.core.view.isVisible
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.criminalintent.database.CrimeDao
 import java.util.*
 
+@Suppress("NAME_SHADOWING")
 class CrimeListFragment : Fragment() {
 
     interface Callbacks{
@@ -25,6 +30,8 @@ class CrimeListFragment : Fragment() {
 
     private lateinit var crimeListViewModel: CrimeListViewModel
     private lateinit var recyclerViewCrime: RecyclerView
+    private lateinit var textViewEmpty: TextView
+    private lateinit var buttonAddCrime: Button
     private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
 
     override fun onAttach(context: Context) {
@@ -47,6 +54,18 @@ class CrimeListFragment : Fragment() {
         recyclerViewCrime = view.findViewById(R.id.recycler_view_crime)
         recyclerViewCrime.layoutManager = LinearLayoutManager(context)
         recyclerViewCrime.adapter = adapter
+
+        if (recyclerViewCrime.adapter?.itemCount == 0){
+            val view = inflater.inflate(R.layout.empty_view, container, false)
+            textViewEmpty = view.findViewById(R.id.text_view_empty)
+            buttonAddCrime = view.findViewById(R.id.button_empty)
+            buttonAddCrime.setOnClickListener {
+                val crime = Crime()
+                crimeListViewModel.addCrime(crime)
+                callbacks?.onCrimeSelected(crime.id)
+            }
+            return view
+        }
         return view
     }
 
