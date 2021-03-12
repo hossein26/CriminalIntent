@@ -3,23 +3,16 @@ package com.example.criminalintent
 import android.content.Context
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.core.view.get
-import androidx.core.view.isEmpty
-import androidx.core.view.isVisible
-import androidx.core.view.size
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.criminalintent.database.CrimeDao
 import java.util.*
 
-@Suppress("NAME_SHADOWING")
 class CrimeListFragment : Fragment() {
 
     interface Callbacks{
@@ -54,18 +47,6 @@ class CrimeListFragment : Fragment() {
         recyclerViewCrime = view.findViewById(R.id.recycler_view_crime)
         recyclerViewCrime.layoutManager = LinearLayoutManager(context)
         recyclerViewCrime.adapter = adapter
-
-        if (recyclerViewCrime.adapter?.itemCount == 0){
-            val view = inflater.inflate(R.layout.empty_view, container, false)
-            textViewEmpty = view.findViewById(R.id.text_view_empty)
-            buttonAddCrime = view.findViewById(R.id.button_empty)
-            buttonAddCrime.setOnClickListener {
-                val crime = Crime()
-                crimeListViewModel.addCrime(crime)
-                callbacks?.onCrimeSelected(crime.id)
-            }
-            return view
-        }
         return view
     }
 
@@ -105,15 +86,27 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>){
-        adapter = CrimeAdapter(crimes)
-        recyclerViewCrime.adapter = adapter
+        when (crimes.size) {
+            0    -> {
+                val adapter = EmptyCrimeAdapter()
+                recyclerViewCrime.adapter = adapter
+            }
+            else -> {
+                adapter = CrimeAdapter(crimes)
+                recyclerViewCrime.adapter = adapter
+            }
+        }
     }
 
-    private inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view){
+    private inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view) {
         //init
         private lateinit var crime: Crime
         private val titleTextView: TextView = itemView.findViewById(R.id.title_text_view)
         private val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
+        private val emptyList: TextView = itemView.findViewById(R.id.empty_crime_list)
+        private val newCrimeButton: Button = itemView.findViewById(R.id.new_crime_button)
+        private val constraintLayout: ConstraintLayout = itemView.findViewById(R.id.list_item_crime)
+        val solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
 
         init {
             view.setOnClickListener {
@@ -121,21 +114,21 @@ class CrimeListFragment : Fragment() {
             }
         }
 
-        fun bind(crime: Crime){
+        fun bind(crime: Crime) {
             this.crime = crime
             titleTextView.text = crime.title
             dateTextView.text = DateFormat.format("EE - hh:mm  -  dd, MM, yyyy", crime.date)
 
-            if (!crime.requirePolice){
+            if (!crime.requirePolice) {
                 val solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
                 solvedImageView.visibility =
-                    when{
+                    when {
                         crime.isSolved -> View.VISIBLE
                         else -> View.GONE
                     }
             }
 
-            if (crime.requirePolice && !crime.isSolved){
+            if (crime.requirePolice && !crime.isSolved) {
                 val policeButton: ImageButton = itemView.findViewById(R.id.police_button)
                 policeButton.setOnClickListener {
                     Toast.makeText(context, "call police", Toast.LENGTH_SHORT).show()
@@ -143,6 +136,18 @@ class CrimeListFragment : Fragment() {
             }
         }
 
+        fun bind() {
+            titleTextView.visibility = View.GONE
+            dateTextView.visibility = View.GONE
+            solvedImageView.visibility = View.GONE
+            emptyList.visibility = View.VISIBLE
+            newCrimeButton.visibility = View.VISIBLE
+            newCrimeButton.setOnClickListener {
+                val crime = Crime()
+                crimeListViewModel.addCrime(crime)
+                callbacks?.onCrimeSelected(crime.id)
+            }
+        }
     }
 
     private inner class CrimeAdapter(var crimes: List<Crime>): RecyclerView.Adapter<CrimeHolder>(){
@@ -167,6 +172,19 @@ class CrimeListFragment : Fragment() {
                 else -> R.id.list_item_crime
             }
 
+        }
+    }
+
+    private inner class EmptyCrimeAdapter : RecyclerView.Adapter<CrimeHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
+            val view = layoutInflater.inflate(R.layout.list_item_crime, parent, false)
+            return CrimeHolder(view)
+        }
+        override fun getItemCount(): Int {
+            return 1
+        }
+        override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
+            holder.bind()
         }
     }
 
