@@ -16,9 +16,15 @@ class DatePickerFragment: DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        //set date
         val date = arguments?.getSerializable(ARG_DATE) as Date
         val calendar = Calendar.getInstance()
         calendar.time = date
+        val initialYear = calendar.get(Calendar.YEAR)
+        val initialMonth = calendar.get(Calendar.MONTH)
+        val initialDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+        //set time
         val initialHour = calendar.get(Calendar.HOUR)
         val initialMinutes = calendar.get(Calendar.MINUTE)
 
@@ -31,10 +37,6 @@ class DatePickerFragment: DialogFragment() {
                 (fragment as Callbacks).onDateSelected(resultDate)
             }
         }
-
-        val initialYear = calendar.get(Calendar.YEAR)
-        val initialMonth = calendar.get(Calendar.MONTH)
-        val initialDay = calendar.get(Calendar.DAY_OF_MONTH)
 
         return DatePickerDialog(
             requireContext(),
