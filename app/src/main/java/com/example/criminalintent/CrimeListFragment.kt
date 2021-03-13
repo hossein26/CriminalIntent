@@ -1,6 +1,8 @@
 package com.example.criminalintent
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.*
@@ -100,9 +102,6 @@ class CrimeListFragment : Fragment() {
         private lateinit var crime: Crime
         private val titleTextView: TextView = itemView.findViewById(R.id.title_text_view)
         private val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
-        private val emptyList: TextView = itemView.findViewById(R.id.empty_crime_list)
-        private val newCrimeButton: Button = itemView.findViewById(R.id.new_crime_button)
-        val solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
 
         init {
             view.setOnClickListener {
@@ -127,12 +126,17 @@ class CrimeListFragment : Fragment() {
             if (crime.requirePolice && !crime.isSolved) {
                 val policeButton: ImageButton = itemView.findViewById(R.id.police_button)
                 policeButton.setOnClickListener {
-                    Toast.makeText(context, "call police", Toast.LENGTH_SHORT).show()
+                    val dialIntent = Intent(Intent.ACTION_DIAL)
+                    dialIntent.data = Uri.parse("tel:" + "911")
+                    startActivity(dialIntent)
                 }
             }
         }
 
         fun bind() {
+            val solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
+            val emptyList: TextView = itemView.findViewById(R.id.empty_crime_list)
+            val newCrimeButton: Button = itemView.findViewById(R.id.new_crime_button)
             titleTextView.visibility = View.GONE
             dateTextView.visibility = View.GONE
             solvedImageView.visibility = View.GONE

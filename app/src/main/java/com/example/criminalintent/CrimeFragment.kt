@@ -27,6 +27,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
     private lateinit var editTextTitle:EditText
     private lateinit var buttonDate: Button
     private lateinit var checkBoxSolved: CheckBox
+    private lateinit var checkBoxPolice: CheckBox
     private lateinit var crime: Crime
     private lateinit var crimeDetailViewModel: CrimeDetailViewModel
     private lateinit var buttonTime: Button
@@ -50,6 +51,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
         buttonDate = view.findViewById(R.id.button_date)
         buttonTime = view.findViewById(R.id.button_time)
         checkBoxSolved = view.findViewById(R.id.checkbox_solved)
+        checkBoxPolice = view.findViewById(R.id.checkbox_police)
 
         return view
     }
@@ -103,6 +105,14 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
         checkBoxSolved.apply {
             setOnCheckedChangeListener { _, isChecked ->
                 crime.isSolved = isChecked
+                checkBoxPolice.isEnabled = !crime.isSolved
+            }
+        }
+
+        checkBoxPolice.apply {
+            setOnCheckedChangeListener{_, isChecked ->
+                crime.requirePolice = isChecked
+                checkBoxSolved.isEnabled = !crime.requirePolice
             }
         }
     }
@@ -130,6 +140,10 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
         buttonTime.text = crimeTime
         checkBoxSolved.apply {
             isChecked = crime.isSolved
+            jumpDrawablesToCurrentState()
+        }
+        checkBoxPolice.apply {
+            isChecked = crime.requirePolice
             jumpDrawablesToCurrentState()
         }
     }

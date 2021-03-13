@@ -8,4 +8,5 @@
     <string name="new_crime">New Crime</string>
     <string name="call_police_description">call police</string>
     <string name="text_empty_view">Not Crime available, add One!</string>
+    <string name="chb_require_police">require police</string>
 </resources>
