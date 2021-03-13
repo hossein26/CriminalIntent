@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import java.text.SimpleDateFormat
@@ -24,13 +25,14 @@ private const val REQUEST_TIME = 1
 
 class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragment.Callbacks {
 
-    private lateinit var editTextTitle:EditText
+    private lateinit var editTextTitle: EditText
     private lateinit var buttonDate: Button
     private lateinit var checkBoxSolved: CheckBox
     private lateinit var checkBoxPolice: CheckBox
     private lateinit var crime: Crime
     private lateinit var crimeDetailViewModel: CrimeDetailViewModel
     private lateinit var buttonTime: Button
+    private lateinit var buttonSave: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +54,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
         buttonTime = view.findViewById(R.id.button_time)
         checkBoxSolved = view.findViewById(R.id.checkbox_solved)
         checkBoxPolice = view.findViewById(R.id.checkbox_police)
+        buttonSave = view.findViewById(R.id.button_save)
 
         return view
     }
@@ -73,7 +76,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
         super.onStart()
 
         //listeners
-        val titleWatcher = object : TextWatcher{
+        val titleWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 //blank
             }
@@ -110,16 +113,22 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
         }
 
         checkBoxPolice.apply {
-            setOnCheckedChangeListener{_, isChecked ->
+            setOnCheckedChangeListener { _, isChecked ->
                 crime.requirePolice = isChecked
                 checkBoxSolved.isEnabled = !crime.requirePolice
             }
         }
-    }
 
-    override fun onStop() {
-        super.onStop()
-        crimeDetailViewModel.saveCrime(crime)
+        buttonSave.setOnClickListener {
+            if (editTextTitle.text.toString().trim().isNotEmpty()) {
+                crimeDetailViewModel.saveCrime(crime)
+                Toast.makeText(context, "saved", Toast.LENGTH_SHORT).show()
+            } else {
+                editTextTitle.error = "title cant empty"
+                editTextTitle.requestFocus()
+                return@setOnClickListener
+            }
+        }
     }
 
     override fun onDateSelected(date: Date) {
@@ -133,7 +142,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun updateUI(){
+    private fun updateUI() {
         editTextTitle.setText(crime.title)
         buttonDate.text = DateFormat.format("dd/ MM/ yyyy", crime.date)
         val crimeTime = SimpleDateFormat("hh:mm a").format(this.crime.date)
@@ -150,7 +159,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks, TimePickerFragme
 
     companion object {
 
-        fun newInstance(crimeId: UUID): CrimeFragment{
+        fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle().apply {
                 putSerializable(ARG_CRIME_ID, crimeId)
             }

@@ -16,7 +16,7 @@ import java.util.*
 
 class CrimeListFragment : Fragment() {
 
-    interface Callbacks{
+    interface Callbacks {
         fun onCrimeSelected(crimeId: UUID)
     }
 
@@ -72,8 +72,8 @@ class CrimeListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
-            R.id.new_crime ->{
+        return when (item.itemId) {
+            R.id.new_crime -> {
                 val crime = Crime()
                 crimeListViewModel.addCrime(crime)
                 callbacks?.onCrimeSelected(crime.id)
@@ -84,9 +84,9 @@ class CrimeListFragment : Fragment() {
 
     }
 
-    private fun updateUI(crimes: List<Crime>){
+    private fun updateUI(crimes: List<Crime>) {
         when (crimes.size) {
-            0    -> {
+            0 -> {
                 val adapter = EmptyCrimeAdapter()
                 recyclerViewCrime.adapter = adapter
             }
@@ -97,7 +97,7 @@ class CrimeListFragment : Fragment() {
         }
     }
 
-    private inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view) {
+    private inner class CrimeHolder(view: View) : RecyclerView.ViewHolder(view) {
         //init
         private lateinit var crime: Crime
         private val titleTextView: TextView = itemView.findViewById(R.id.title_text_view)
@@ -131,6 +131,7 @@ class CrimeListFragment : Fragment() {
                     startActivity(dialIntent)
                 }
             }
+
         }
 
         fun bind() {
@@ -150,10 +151,15 @@ class CrimeListFragment : Fragment() {
         }
     }
 
-    private inner class CrimeAdapter(var crimes: List<Crime>): RecyclerView.Adapter<CrimeHolder>(){
+    private inner class CrimeAdapter(var crimes: List<Crime>) :
+        RecyclerView.Adapter<CrimeHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
-            val view = when (viewType){
-                R.id.list_item_crime -> layoutInflater.inflate(R.layout.list_item_crime, parent, false)
+            val view = when (viewType) {
+                R.id.list_item_crime -> layoutInflater.inflate(
+                    R.layout.list_item_crime,
+                    parent,
+                    false
+                )
                 else -> layoutInflater.inflate(R.layout.list_item_police, parent, false)
             }
             return CrimeHolder(view)
@@ -167,7 +173,7 @@ class CrimeListFragment : Fragment() {
         override fun getItemCount() = crimes.size
 
         override fun getItemViewType(position: Int): Int {
-            return when{
+            return when {
                 crimes[position].requirePolice -> R.id.list_item_police
                 else -> R.id.list_item_crime
             }
@@ -180,9 +186,11 @@ class CrimeListFragment : Fragment() {
             val view = layoutInflater.inflate(R.layout.list_item_crime, parent, false)
             return CrimeHolder(view)
         }
+
         override fun getItemCount(): Int {
             return 1
         }
+
         override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
             holder.bind()
         }

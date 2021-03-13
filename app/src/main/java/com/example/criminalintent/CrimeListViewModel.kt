@@ -10,4 +10,8 @@ class CrimeListViewModel : ViewModel() {
     fun addCrime(crime: Crime){
         crimeRepository.addCrime(crime)
     }
+
+    fun updateCrime(crime: Crime){
+        crimeRepository.updateCrime(crime)
+    }
 }
