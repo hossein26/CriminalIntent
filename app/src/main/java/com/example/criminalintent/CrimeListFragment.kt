@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.*
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,8 +22,6 @@ class CrimeListFragment : Fragment() {
 
     private lateinit var crimeListViewModel: CrimeListViewModel
     private lateinit var recyclerViewCrime: RecyclerView
-    private lateinit var textViewEmpty: TextView
-    private lateinit var buttonAddCrime: Button
     private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
 
     override fun onAttach(context: Context) {
@@ -105,7 +102,6 @@ class CrimeListFragment : Fragment() {
         private val dateTextView: TextView = itemView.findViewById(R.id.date_text_view)
         private val emptyList: TextView = itemView.findViewById(R.id.empty_crime_list)
         private val newCrimeButton: Button = itemView.findViewById(R.id.new_crime_button)
-        private val constraintLayout: ConstraintLayout = itemView.findViewById(R.id.list_item_crime)
         val solvedImageView: ImageView = itemView.findViewById(R.id.crime_solved)
 
         init {
